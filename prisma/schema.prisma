@@ -1,85 +1,191 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// ============================================================
+// BLOQUE 1: GENERATOR
+// Le dice a Prisma qué código tiene que generar cuando corrés
+// "pnpm prisma generate". En este caso genera el cliente
+// TypeScript que usás en tu código para hacer queries a la BD.
+// - provider: "prisma-client-js" es el generador estándar para Node.js/Next.js
+// - output: en vez de guardarlo en node_modules (default), lo guarda
+//   en lib/generated/prisma para que TypeScript lo encuentre mejor.
+//   Por eso en lib/prisma.ts el import viene de "@/lib/generated/prisma/client"
+// ============================================================
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
 }
 
+// ============================================================
+// BLOQUE 2: DATASOURCE
+// Le dice a Prisma a qué base de datos conectarse.
+// - provider: el tipo de BD. Vos usás PostgreSQL de Supabase.
+// - url: la URL de conexión con pooling (PgBouncer). Es la que
+//   usa la app en producción para manejar múltiples usuarios
+//   sin abrir una conexión nueva por cada request.
+// - directUrl: conexión directa a PostgreSQL sin pooling.
+//   Prisma la usa SOLO para correr migraciones, porque las
+//   migraciones necesitan una conexión persistente que el
+//   pooler no puede garantizar.
+// Ambas URLs vienen del archivo .env
+// ============================================================
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  
 }
 
-//Define un tipo con valores fijos. un enum es como una lista cerrada de opciones válidas 
+// ============================================================
+// BLOQUE 3: ENUM ROL
+// Un enum es una lista cerrada de valores válidos.
+// En vez de guardar el rol como un String libre (donde alguien
+// podría escribir "admin", "OWNER", "jefe", etc.), el enum
+// garantiza que solo pueden existir exactamente estos dos valores.
+// PostgreSQL rechaza cualquier otro valor y TypeScript te avisa
+// en tiempo de desarrollo si usás uno inválido.
+// ============================================================
 enum Rol {
-  OWNER
-  EMPLOYEE
-  /* ¿Por qué no usar un String? Si usaras rol String, alguien podría guardar "admin", "OWNER", "owner", "jefe" y todos serían valores distintos e inconsistentes. Con el enum, PostgreSQL rechaza cualquier valor que no sea exactamente OWNER o EMPLOYEE. TypeScript también te avisa en tiempo de desarrollo si usás un valor inválido. */
+  OWNER    // Dueño de la tienda: acceso total
+  EMPLOYEE // Empleado: acceso limitado (sin borrar productos, sin ver márgenes, etc.)
 }
+
+// ============================================================
+// MODELO: User (tabla "usuarios")
+// Representa a cada persona que puede iniciar sesión en la app.
+// Se relaciona con una Tienda: cada usuario pertenece a una sola
+// tienda. La tienda puede tener múltiples usuarios (dueño + empleados).
+//
+// CAMPOS:
+// - id: clave primaria, UUID generado automáticamente
+// - email: único por usuario (no pueden existir dos con el mismo)
+// - nombre: nombre para mostrar en la UI
+// - rol: OWNER o EMPLOYEE, con EMPLOYEE como valor por defecto
+// - tiendaId: la foreign key real que existe en la tabla (el "vínculo")
+// - tienda: campo virtual para hacer JOIN con Tienda (no es columna en la BD)
+// - created_at: timestamp automático del momento de creación
+// @@map: la tabla en PostgreSQL se llama "usuarios" (convención SQL)
+// ============================================================
 model User {
-  id String @id @default(uuid())
-  email String @unique
-  nombre String
-  rol Rol @default(EMPLOYEE)
-  tiendaId String
-  tienda Tienda @relation(fields: [tiendaId], references: [id])
+  id         String   @id @default(uuid())
+  email      String   @unique
+  nombre     String
+  rol        Rol      @default(EMPLOYEE)
+  tiendaId   String
+  tienda     Tienda   @relation(fields: [tiendaId], references: [id])
   created_at DateTime @default(now())
+
   @@map("usuarios")
 }
-// Cada model se convierte en una tabla de PostgreSQL
-// Analicemos Producto como ejemplo completo:
-model Producto {
-  id String @id @default(uuid())
-  tienda_id String
-  tienda Tienda @relation(fields: [tienda_id], references: [id])
-  nombre String
-  categoria String
-  stock Int @default(0)
-  stockMinimo Int @default(3)
-  precioCompra Float
-  precioVenta Float
-  fechaVencimiento DateTime?
-  ventas Venta[]
-  created_at DateTime @default(now())
-  @@map("productos")
-}
 
+// ============================================================
+// MODELO: Tienda (tabla "tiendas")
+// Representa cada farmacia/drugstore registrada en el sistema.
+// Es el eje central del modelo multi-tenant: TODOS los demás
+// modelos (productos, ventas, proveedores) pertenecen a una tienda.
+// Así cada cliente del SaaS solo ve sus propios datos.
+//
+// CAMPOS:
+// - usuarios/productos/ventas/proveedores: campos virtuales que
+//   representan las relaciones inversas. No son columnas en la BD,
+//   son la forma que tiene Prisma de saber que puede traerte todos
+//   los registros relacionados con esta tienda.
+//   Ej: tienda.productos trae todos los productos de esa tienda.
+// ============================================================
 model Tienda {
-  id String @id @default(uuid())
-  nombre String
-  usuarios User[]
-  productos Producto[]
-  ventas Venta[]
+  id          String      @id @default(uuid())
+  nombre      String
+  usuarios    User[]
+  productos   Producto[]
+  ventas      Venta[]
   proveedores Proveedor[]
-  created_at DateTime @default(now())
+  created_at  DateTime    @default(now())
+
   @@map("tiendas")
 }
 
+// ============================================================
+// MODELO: Producto (tabla "productos")
+// Representa cada producto del inventario de una tienda.
+//
+// CAMPOS:
+// - tiendaId + tienda: vínculo con la tienda dueña del producto
+// - categoria: texto libre para clasificar (ej: "Medicamentos", "Higiene")
+// - stock: cantidad actual en inventario
+// - stockMinimo: umbral para alertas de stock bajo. Si stock < stockMinimo
+//   el sistema debe mostrar una alerta
+// - precioCompra: lo que le costó a la tienda comprarlo al proveedor
+// - precioVenta: lo que se le cobra al cliente
+// - fechaVencimiento: opcional (DateTime?). El "?" indica que puede ser null.
+//   No todos los productos vencen (ej: un tensiómetro no tiene vencimiento)
+// - ventas: relación inversa, permite ver qué ventas incluyeron este producto
+// ============================================================
+model Producto {
+  id               String    @id @default(uuid())
+  tiendaId         String
+  tienda           Tienda    @relation(fields: [tiendaId], references: [id])
+  nombre           String
+  categoria        String
+  stock            Int       @default(0)
+  stockMinimo      Int       @default(3)
+  precioCompra     Float
+  precioVenta      Float
+  fechaVencimiento DateTime?
+  ventas           Venta[]
+  created_at       DateTime  @default(now())
+
+  @@map("productos")
+}
+
+// ============================================================
+// MODELO: Venta (tabla "ventas")
+// Representa cada transacción de venta registrada.
+// IMPORTANTE: guarda una "foto" de los precios al momento de la venta.
+// Esto es crítico porque si mañana cambiás el precio de un producto,
+// el historial de ventas pasadas debe conservar el precio original.
+//
+// CAMPOS:
+// - productoId + producto: qué producto se vendió
+// - cantidad: cuántas unidades
+// - precioVentaUnitario: precio de venta en el momento de la venta
+// - precioCompraUnitario: precio de compra en el momento de la venta
+// - margen: ganancia por unidad (precioVenta - precioCompra)
+// - totalVenta: precioVentaUnitario × cantidad
+// - totalMargen: margen × cantidad
+// Todos estos campos se calculan y guardan en la Server Action,
+// no en la UI, para garantizar integridad de los datos.
+// ============================================================
 model Venta {
-  id String @id @default(uuid())
-  tiendaId String
-  tienda Tienda @relation(fields: [tiendaId], references: [id])
-  productoId String
-  producto Producto @relation(fields: [productoId], references: [id])
-  cantidad Int
-  precioVentaUnitario Float
+  id                   String   @id @default(uuid())
+  tiendaId             String
+  tienda               Tienda   @relation(fields: [tiendaId], references: [id])
+  productoId           String
+  producto             Producto @relation(fields: [productoId], references: [id])
+  cantidad             Int
+  precioVentaUnitario  Float
   precioCompraUnitario Float
-  margen Float
-  totalVenta Float
-  totalMargen Float
-  created_at DateTime @default(now())
+  margen               Float
+  totalVenta           Float
+  totalMargen          Float
+  created_at           DateTime @default(now())
+
   @@map("ventas")
 }
+
+// ============================================================
+// MODELO: Proveedor (tabla "proveedores")
+// Representa a los distribuidores/mayoristas que abastecen la tienda.
+//
+// CAMPOS:
+// - telefono: opcional (String?), no todos los proveedores tienen
+//   un teléfono registrado
+// - diaVisita: opcional, el día de la semana que visita la tienda
+//   (ej: "Lunes", "Martes y Jueves"). Útil para planificar pedidos.
+// En la Fase 6 se puede agregar la relación con Producto para saber
+// qué proveedor surte qué producto.
+// ============================================================
 model Proveedor {
   id         String   @id @default(uuid())
-  tiendaId  String
+  tiendaId   String
   tienda     Tienda   @relation(fields: [tiendaId], references: [id])
   nombre     String
   telefono   String?
-  diaVisita String?
+  diaVisita  String?
   created_at DateTime @default(now())
 
   @@map("proveedores")
