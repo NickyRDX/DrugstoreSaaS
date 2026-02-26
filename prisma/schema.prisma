@@ -19,7 +19,16 @@ enum Rol {
   EMPLOYEE
   /* ¿Por qué no usar un String? Si usaras rol String, alguien podría guardar "admin", "OWNER", "owner", "jefe" y todos serían valores distintos e inconsistentes. Con el enum, PostgreSQL rechaza cualquier valor que no sea exactamente OWNER o EMPLOYEE. TypeScript también te avisa en tiempo de desarrollo si usás un valor inválido. */
 }
-
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  nombre String
+  rol Rol @default(EMPLOYEE)
+  tiendaId String
+  tienda Tienda @relation(fields: [tiendaId], references: [id])
+  created_at DateTime @default(now())
+  @@map("usuarios")
+}
 // Cada model se convierte en una tabla de PostgreSQL
 // Analicemos Producto como ejemplo completo:
 model Producto {
@@ -36,4 +45,42 @@ model Producto {
   ventas Venta[]
   created_at DateTime @default(now())
   @@map("productos")
+}
+
+model Tienda {
+  id String @id @default(uuid())
+  nombre String
+  usuarios User[]
+  productos Producto[]
+  ventas Venta[]
+  proveedores Proveedor[]
+  created_at DateTime @default(now())
+  @@map("tiendas")
+}
+
+model Venta {
+  id String @id @default(uuid())
+  tiendaId String
+  tienda Tienda @relation(fields: [tiendaId], references: [id])
+  productoId String
+  producto Producto @relation(fields: [productoId], references: [id])
+  cantidad Int
+  precioVentaUnitario Float
+  precioCompraUnitario Float
+  margen Float
+  totalVenta Float
+  totalMargen Float
+  created_at DateTime @default(now())
+  @@map("ventas")
+}
+model Proveedor {
+  id         String   @id @default(uuid())
+  tiendaId  String
+  tienda     Tienda   @relation(fields: [tiendaId], references: [id])
+  nombre     String
+  telefono   String?
+  diaVisita String?
+  created_at DateTime @default(now())
+
+  @@map("proveedores")
 }
