@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//Define un tipo con valores fijos. un enum es como una lista cerrada de opciones válidas 
+enum Rol {
+  OWNER
+  EMPLOYEE
+  /* ¿Por qué no usar un String? Si usaras rol String, alguien podría guardar "admin", "OWNER", "owner", "jefe" y todos serían valores distintos e inconsistentes. Con el enum, PostgreSQL rechaza cualquier valor que no sea exactamente OWNER o EMPLOYEE. TypeScript también te avisa en tiempo de desarrollo si usás un valor inválido. */
+}
+
+// Cada model se convierte en una tabla de PostgreSQL
+// Analicemos Producto como ejemplo completo:
+model Producto {
+  id String @id @default(uuid())
+  tienda_id String
+  tienda Tienda @relation(fields: [tienda_id], references: [id])
+  nombre String
+  categoria String
+  stock Int @default(0)
+  stockMinimo Int @default(3)
+  precioCompra Float
+  precioVenta Float
+  fechaVencimiento DateTime?
+  ventas Venta[]
+  created_at DateTime @default(now())
+  @@map("productos")
+}
