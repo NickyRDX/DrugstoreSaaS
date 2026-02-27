@@ -1,12 +1,17 @@
-"use client"
-import ThemeToggle from '@/shared/components/ThemeToggle';
-import React from 'react'
+"use client";
+import NavToggle from "@/shared/components/NavToggle";
+import ThemeToggle from "@/shared/components/ThemeToggle";
+import React from "react";
 
-export default function AuthLayout({children}:{children: React.ReactNode}) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
-      <main className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 p-4 dark:bg-gray-900">
-        <ThemeToggle />
+      <NavToggle />
+      <main className="min-h-full w-full flex flex-col items-center justify-center p-4 overflow-y-hidden">
         {children}
       </main>
     </>

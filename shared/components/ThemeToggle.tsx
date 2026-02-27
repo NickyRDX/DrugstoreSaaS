@@ -16,7 +16,7 @@ export default function ThemeToggle() {
           <span className="sr-only">Toggle Theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="border-none" align="end">
+      <DropdownMenuContent className="border-none" align="start">
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => setTheme(`light`)}

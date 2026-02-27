@@ -23,11 +23,10 @@ export default function RootLayout({
   return (
     <html lang="es-AR"
     suppressHydrationWarning>
-      <body className={`${InterSans.variable} antialiased`}>
+      <body className={`${InterSans.variable} antialiased bg-slate-50 dark:bg-neutral-900`}>
         <ThemeProvider
           attribute={`class`}
           enableSystem
-          disableTransitionOnChange
           defaultTheme={`system`}
         >
           {children}
