@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/shared/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const InterSans = Inter({
   variable: "--font-inter-sans",
@@ -23,13 +24,14 @@ export default function RootLayout({
   return (
     <html lang="es-AR"
     suppressHydrationWarning>
-      <body className={`${InterSans.variable} antialiased bg-slate-50 dark:bg-neutral-900`}>
+      <body className={`${InterSans.variable} antialiased bg-slate-100 dark:bg-neutral-900`}>
         <ThemeProvider
           attribute={`class`}
           enableSystem
           defaultTheme={`system`}
         >
           {children}
+          <Toaster position="top-right"/>
         </ThemeProvider>
       </body>
     </html>

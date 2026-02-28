@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {login} from '@/actions/auth'
+import { login } from "@/actions/auth";
 import {
   Card,
   CardContent,
@@ -27,10 +27,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Spinner } from "@/components/ui/spinner";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
 export default function LoginPage() {
+  const [loading,setLoading] = useState<boolean>(false)
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,14 +43,16 @@ export default function LoginPage() {
     },
   });
   async function onSubmit(data: LoginFormData) {
-    const formDate = new FormData()
-    formDate.append('email', data.email)
-    formDate.append('password', data.password)
-    const resultado = await login(formDate)
-    if(resultado?.error){
-      console.log(resultado.error)
+    setLoading(true)
+    const formDate = new FormData();
+    formDate.append("email", data.email);
+    formDate.append("password", data.password);
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const resultado = await login(formDate);
+    if (resultado?.error) {
+      console.log(resultado.error);
     }
-    console.log(data);
+    setLoading(false)
   }
   return (
     <Card className="w-full max-w-md shadow-lg border-slate-950/10 border h-full dark:border-accent dark:border-2 dark:border-solid">
@@ -104,9 +110,15 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button className="w-full cursor-pointer p-6 mt-6" type="submit">
-              Iniciar Sesion
-              <ArrowRight/>
+            <Button disabled={form.formState.isSubmitting || loading} className="w-full cursor-pointer p-6 mt-6" type="submit">
+              {loading ? (
+                <Spinner className='size-5' />
+              ):(
+                <>
+                Iniciar Sesion
+                <ArrowRight className='flex items-center size-5'/>
+                </>
+              )}
             </Button>
           </form>
         </Form>
