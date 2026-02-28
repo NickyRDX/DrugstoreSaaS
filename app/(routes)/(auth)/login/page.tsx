@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 export default function LoginPage() {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -48,7 +49,7 @@ export default function LoginPage() {
     console.log(data);
   }
   return (
-    <Card className="w-full max-w-md shadow-lg border-0 h-full dark:border-accent dark:border-3 dark:border-solid">
+    <Card className="w-full max-w-md shadow-lg border-slate-950/10 border h-full dark:border-accent dark:border-2 dark:border-solid">
       {/* w-full: en móvil ocupa todo el ancho disponible (menos el p-4 del layout) */}
       {/* max-w-md: en PC no pasará de ~448px, el tamaño ideal para un login */}
       <CardHeader className="mb-4">
@@ -70,7 +71,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem className="mt-2">
-                  <FormLabel className="mb-2 tracking-wide text-base">
+                  <FormLabel className="mb-2 tracking-wide text-base leading-tight">
                     Email
                   </FormLabel>
                   <FormControl>
@@ -89,7 +90,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem className="mt-2">
-                  <FormLabel className="mb-2 tracking-wide text-base">
+                  <FormLabel className="mb-2 tracking-wide text-base leading-tight">
                     Contraseña
                   </FormLabel>
                   <FormControl>
@@ -105,13 +106,7 @@ export default function LoginPage() {
             />
             <Button className="w-full cursor-pointer p-6 mt-6" type="submit">
               Iniciar Sesion
-            </Button>
-            <Button
-              variant="secondary"
-              className="w-full p-6 mt-0 cursor-pointer"
-              asChild
-            >
-              <Link href={`/register`}>Registar</Link>
+              <ArrowRight/>
             </Button>
           </form>
         </Form>
