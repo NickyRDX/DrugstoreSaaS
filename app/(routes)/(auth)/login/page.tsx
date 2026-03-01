@@ -59,7 +59,7 @@ export default function LoginPage() {
       {/* w-full: en móvil ocupa todo el ancho disponible (menos el p-4 del layout) */}
       {/* max-w-md: en PC no pasará de ~448px, el tamaño ideal para un login */}
       <CardHeader className="mb-4">
-        <CardTitle className="text-center text-2xl font-bold">
+        <CardTitle className="text-center text-2xl font-bold text-slate-800 dark:text-slate-100">
           Iniciar Sesion
         </CardTitle>
         <CardDescription>
@@ -77,7 +77,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem className="mt-2">
-                  <FormLabel className="mb-2 tracking-wide text-base leading-tight">
+                  <FormLabel className="mb-1 tracking-wide text-base leading-tight">
                     Email
                   </FormLabel>
                   <FormControl>
@@ -95,7 +95,7 @@ export default function LoginPage() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="mt-2">
+                <FormItem className="mt-1">
                   <FormLabel className="mb-2 tracking-wide text-base leading-tight">
                     Contraseña
                   </FormLabel>
@@ -110,7 +110,7 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button disabled={form.formState.isSubmitting || loading} className="w-full cursor-pointer p-6 mt-6" type="submit">
+            <Button disabled={form.formState.isSubmitting || loading} className="w-full rounded-lg text-base cursor-pointer tracking-tight p-6 mt-6 md:text-sm" type="submit">
               {loading ? (
                 <Spinner className='size-5' />
               ):(

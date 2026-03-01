@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const InterSans = Inter({
-  variable: "--font-inter-sans",
+const PoppinsSans = Poppins({
+  variable: "--font-poppins-sans",
   subsets: ["latin"],
   display: "swap",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -22,16 +23,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es-AR"
-    suppressHydrationWarning>
-      <body className={`${InterSans.variable} antialiased bg-slate-100 dark:bg-neutral-900`}>
-        <ThemeProvider
-          attribute={`class`}
-          enableSystem
-          defaultTheme={`system`}
-        >
-          {children}
-          <Toaster position="top-right"/>
+    <html lang="es-AR" suppressHydrationWarning>
+      <body
+        className={`${PoppinsSans.variable} antialiased bg-slate-100 dark:bg-neutral-900`}
+      >
+        <ThemeProvider attribute={`class`} enableSystem defaultTheme={`system`}>
+          <TooltipProvider>{children}</TooltipProvider>
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>
