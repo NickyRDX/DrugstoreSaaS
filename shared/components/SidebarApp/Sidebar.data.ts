@@ -38,7 +38,7 @@ export const sidebarDato: SidebarProps[] =[
   },
   {
     id: 6,
-    titulo: 'Userio',
+    titulo: 'User',
     href: '/usuarios',
     icon: User ,
   },
