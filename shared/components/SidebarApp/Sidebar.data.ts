@@ -1,4 +1,4 @@
-import { Home, LucideIcon, PackageIcon } from "lucide-react";
+import { BadgeDollarSign, Home, LucideIcon, PackageIcon, PersonStanding, TruckElectric, User } from "lucide-react";
 type SidebarProps = {
   id:number;
   titulo: string;
@@ -9,7 +9,7 @@ export const sidebarDato: SidebarProps[] =[
   {
     id: 1,
     titulo : 'Inicio',
-    href: '/',
+    href: '/dashboard',
     icon: Home ,
   },
   {
@@ -17,5 +17,29 @@ export const sidebarDato: SidebarProps[] =[
     titulo: 'Stock',
     href: '/productos',
     icon: PackageIcon ,
-  }
+  },
+  {
+    id: 3,
+    titulo: 'Ventas',
+    href: '/ventas',
+    icon: BadgeDollarSign ,
+  },
+  {
+    id: 4,
+    titulo: 'Empleados',
+    href: '/empleados',
+    icon: PersonStanding ,
+  },
+  {
+    id: 5,
+    titulo: 'Proveedores',
+    href: '/proveedores',
+    icon: TruckElectric ,
+  },
+  {
+    id: 6,
+    titulo: 'Userio',
+    href: '/usuarios',
+    icon: User ,
+  },
 ]

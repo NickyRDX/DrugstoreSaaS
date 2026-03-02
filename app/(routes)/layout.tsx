@@ -12,7 +12,7 @@ export default function LayoutRoutes({ children }: LayoutRoutesProps) {
       <SidebarProvider>
         <SidebarApp />
         <SidebarInset>
-          <header className="flex h-16 items-center gap-x-2 border-b dark:border-zinc-100/20 px-4 border-zinc-900/20">
+          <header className="flex h-16 justify-end items-center gap-x-2 border-b dark:border-zinc-100/20 px-4 border-zinc-900/20">
             <SidebarTrigger className="cursor-pointer"/>
             <ThemeToggle/>
           </header>
