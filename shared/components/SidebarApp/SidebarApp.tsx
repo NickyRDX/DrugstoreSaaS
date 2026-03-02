@@ -22,13 +22,21 @@ export default function SidebarApp() {
       <SidebarHeader>Mi Logo</SidebarHeader>
       <SidebarContent>
         <SidebarGroupLabel>Bienvenido a tu panel</SidebarGroupLabel>
-        <SidebarMenu>
+        <SidebarMenu className="space-y-3 md:space-y-6">
           {sidebarDato.map(({ href, icon: Icon, titulo, id }) => (
-            <SidebarMenuItem className='flex items-center space-y-6 gap-x-2 px-3' key={id}>
+            <SidebarMenuItem
+              className="flex items-center px-3 gap-x-2 h-full"
+              key={id}
+            >
               <SidebarMenuButton asChild>
-                <Link href={href}>
-                <Icon size={50}/>
-                {titulo}
+                <Link
+                  href={href}
+                  className="flex w-full h-full gap-x-3 items-center-safe"
+                >
+                  <Icon className="size-5! stroke-1" />
+                  <p className="text-pretty text-base md:text-lg leading-none md:leading-tight text-slate-800 dark:text-slate-200">
+                    {titulo}
+                  </p>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

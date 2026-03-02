@@ -1,3 +1,4 @@
+"use client";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import SidebarApp from "@/shared/components/SidebarApp/SidebarApp";
 import ThemeToggle from "@/shared/components/ThemeToggle";
@@ -7,11 +8,11 @@ interface LayoutRoutesProps {
 }
 export default function LayoutRoutes({ children }: LayoutRoutesProps) {
   return (
-    <main className="max-w-6xl h-screen font-sans md:w-full relative mx-auto overflow-hidden">
+    <main className="h-screen font-sans md:w-full relative mx-auto overflow-hidden">
       <SidebarProvider>
         <SidebarApp />
         <SidebarInset>
-          <header className="flex h-16 items-center gap-x-2  border-b dark:border-zinc-100/20 px-4 border-zinc-900/20">
+          <header className="flex h-16 items-center gap-x-2 border-b dark:border-zinc-100/20 px-4 border-zinc-900/20">
             <SidebarTrigger className="cursor-pointer"/>
             <ThemeToggle/>
           </header>
