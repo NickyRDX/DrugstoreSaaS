@@ -3,7 +3,7 @@ name: Drugstore Manager SaaS MVP
 overview: Plan completo para construir un SaaS de gestion de drugstores con Next.js 16, Supabase, Prisma y TypeScript, dividido en 6 fases con estructura de carpetas definida, sistema de tipos y Server Actions.
 todos:
   - id: fase-1-fundacion
-    content: "FASE 1 -- Fundacion: Configurar Supabase + Prisma + Auth + estructura de carpetas base + types + middleware de proteccion de rutas"
+    content: "FASE 1 -- Fundacion: Configurar Supabase + Prisma + Auth + estructura de carpetas base + types + proxy de proteccion de rutas"
     status: pending
   - id: fase-2-productos
     content: "FASE 2 -- Productos: CRUD completo con validacion Zod, formularios RHF, tabla con indicador de stock bajo, sidebar y header"

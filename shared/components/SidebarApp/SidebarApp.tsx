@@ -11,9 +11,14 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
 import { sidebarDato } from "./Sidebar.data";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 export default function SidebarApp() {
+  const path = usePathname();
+  const isActive = (href: string) =>
+    path === href ? "bg-primary text-primary-foreground" : "";
   return (
     <Sidebar
       collapsible="offcanvas"
@@ -22,16 +27,19 @@ export default function SidebarApp() {
       <SidebarHeader>Mi Logo</SidebarHeader>
       <SidebarContent>
         <SidebarGroupLabel>Bienvenido a tu panel</SidebarGroupLabel>
-        <SidebarMenu className="flex flex-col mt-4 gap-5 md:gap-7 md:mt-7">
+        <SidebarMenu className="flex flex-col mt-4 px-1 gap-5 md:gap-7 md:mt-7">
           {sidebarDato.map(({ href, icon: Icon, titulo, id }) => (
-            <SidebarMenuItem className="" key={id}>
-              <SidebarMenuButton className="" asChild>
+            <SidebarMenuItem  key={id}>
+              <SidebarMenuButton asChild>
                 <Link
                   href={href}
-                  className="flex items-center gap-x-3 w-full py-4 px-6"
+                  className={cn(
+                    "flex items-center gap-x-3 py-6 px-3",
+                    isActive(href),
+                  )}
                 >
-                  <Icon className="stroke-1 size-6! shrink-0 text-slate-700 dark:text-slate-300" />
-                  <span className="-leading-relaxed text-base tracking-tight text-slate-700 dark:text-slate-300">
+                  <Icon className="stroke-1 size-6! shrink-0" />
+                  <span className="-leading-relaxed text-base tracking-tight">
                     {titulo}
                   </span>
                 </Link>
